@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Deutschlernwerkstatt</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;color:#2b2d42;
+  font-family:ui-rounded,"Trebuchet MS","Segoe UI",system-ui,-apple-system,sans-serif;font-size:18px;
+  background:radial-gradient(circle at 8% 0%,#ffe4ef 0,transparent 38%),radial-gradient(circle at 100% 8%,#e1efff 0,transparent 38%),#fff6e5}
+.box{background:#fff;border-radius:24px;padding:26px 22px;width:100%;max-width:400px;text-align:center;
+  box-shadow:0 4px 0 rgba(43,45,66,.06),0 10px 28px rgba(43,45,66,.12)}
+.lock{font-size:3.4rem;line-height:1}
+h1{font-size:1.5rem;margin:.3em 0 .2em}
+p{margin:.3em 0 1em;color:#666b82}
+input[type=password]{font:inherit;font-size:1.3rem;width:100%;padding:12px 14px;border:2px solid #dcdcec;border-radius:14px;text-align:center}
+input[type=password]:focus{outline:none;border-color:#5b5bd6;background:#f3f3ff}
+label{display:flex;gap:8px;align-items:center;justify-content:center;margin:14px 0;font-size:.95rem;color:#2b2d42;cursor:pointer}
+label input{width:22px;height:22px}
+button{font:inherit;font-weight:800;font-size:1.15rem;width:100%;border:0;border-radius:14px;padding:13px 20px;cursor:pointer;
+  background:#5b5bd6;color:#fff;box-shadow:0 4px 0 #3f3fa8}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 #3f3fa8}
+button:disabled{opacity:.6}
+.err{color:#d03a3a;font-weight:800;min-height:1.4em;margin-top:12px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="box" id="box">
+  <div class="lock">🔒</div>
+  <h1>Deutschlernwerkstatt</h1>
+  <p>Gib das Passwort ein, das du von deiner Lehrerin bekommen hast.</p>
+  <form id="f" autocomplete="off">
+    <input type="password" id="pw" aria-label="Passwort" placeholder="Passwort" autocapitalize="off" autocorrect="off" spellcheck="false" autofocus>
+    <label><input type="checkbox" id="merk" checked> Passwort auf diesem Gerät merken</label>
+    <button id="btn" type="submit">Öffnen 🔓</button>
+    <div class="err" id="err" role="alert"></div>
+  </form>
+</div>
+<script>
+(function(){
+  var DATA={salt:"nv1FT11HkHtjD1DeQ6A/rQ==",iv:"LbHbTMKvVBAvGKyq",ct:"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",iter:600000};
+  var KEY="lernwerkstatt-schluessel";
+  function b64(s){var b=atob(s),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u;}
+  function hex(buf){return Array.prototype.map.call(new Uint8Array(buf),function(x){return ('0'+x.toString(16)).slice(-2);}).join('');}
+  function unhex(h){var u=new Uint8Array(h.length/2);for(var i=0;i<u.length;i++)u[i]=parseInt(h.substr(i*2,2),16);return u;}
+  function store(){try{return window.localStorage;}catch(e){return null;}}
+  var box=document.getElementById('box');
+  if(!window.crypto||!crypto.subtle){document.getElementById('err').textContent='Dieser Browser ist zu alt. Bitte öffne die Seite in Safari oder Chrome.';return;}
+  function derive(pw){
+    return crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']).then(function(k){
+      return crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:b64(DATA.salt),iterations:DATA.iter},k,256);
+    });
+  }
+  function open(raw){
+    return crypto.subtle.importKey('raw',raw,'AES-GCM',false,['decrypt']).then(function(k){
+      return crypto.subtle.decrypt({name:'AES-GCM',iv:b64(DATA.iv)},k,b64(DATA.ct));
+    }).then(function(pt){return new TextDecoder().decode(pt);});
+  }
+  function show(html){
+    function go(){setTimeout(function(){document.open();document.write(html);document.close();},0);}
+    if(document.readyState==='complete')go();else window.addEventListener('load',go);
+  }
+  /* Gemerktes Passwort ausprobieren */
+  var st=store(),saved=st&&st.getItem(KEY);
+  if(saved&&saved.indexOf(DATA.salt+':')===0){
+    box.style.visibility='hidden';
+    open(unhex(saved.split(':')[1])).then(show).catch(function(){try{st.removeItem(KEY);}catch(e){}box.style.visibility='visible';});
+  }
+  document.getElementById('f').addEventListener('submit',function(e){
+    e.preventDefault();
+    var pw=document.getElementById('pw').value.trim(),btn=document.getElementById('btn'),err=document.getElementById('err');
+    if(!pw){err.textContent='Bitte gib zuerst das Passwort ein.';return;}
+    btn.disabled=true;btn.textContent='Einen Moment …';err.textContent='';
+    var raw;
+    var merk=document.getElementById('merk').checked;
+    derive(pw).then(function(r){raw=r;return open(r);}).then(function(html){
+      if(merk&&st){try{st.setItem(KEY,DATA.salt+':'+hex(raw));}catch(e){}}
+      show(html);
+    }).catch(function(){
+      btn.disabled=false;btn.textContent='Öffnen 🔓';err.textContent='Das Passwort stimmt nicht. Versuch es noch einmal.';
+      var p=document.getElementById('pw');p.select();
+    });
+  });
+})();
+</script>
+</body>
+</html>
